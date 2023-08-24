@@ -1,0 +1,25 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: my-app-2-frontend-tt
+spec:
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        generateName: my-app-2-frontend-pipeline-run-
+      spec:
+        pipelineRef:
+          name: my-app-2-frontend-pipeline
+        serviceAccountName: build-bot
+        taskRunSpecs:
+          - pipelineTaskName: clone-repository
+            taskPodTemplate:
+              securityContext:
+                runAsUser: 65532
+                runAsGroup: 65532
+                fsGroup: 65532
+        workspaces:
+          - name: pipeline-shared-data
+            persistentVolumeClaim:
+              claimName: hibiki-ito-pvc

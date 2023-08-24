@@ -1,0 +1,85 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  annotations:
+    app.openshift.io/runtime: nodejs
+  name: my-app-2-pipeline
+spec:
+  workspaces:
+    - name: pipeline-shared-data
+      description: |
+        This workspace stores the cloned repository and is available to all steps
+  params:
+    - name: image-repo
+      type: string
+      description: Docker image name
+      default: quay.io/hibikiito/checkride-frontend
+  tasks:
+    - name: clone-repository
+      taskRef:
+        kind: Task
+        name: git-clone
+      params:
+        - name: url
+          value: https://github.com/Hibiki-Ito2/my-app-2-frontend
+      workspaces:
+        - name: output
+          workspace: pipeline-shared-data
+    - name: install-dependencies
+      runAfter:
+        - clone-repository
+      taskRef:
+        name: npm
+      params:
+        - name: PATH_CONTEXT
+          value: "../frontend/"
+        - name: ARGS
+          value:
+            - install
+        - name: IMAGE
+          value: "docker.io/library/node:18.17.0"
+      workspaces:
+        - name: source
+          workspace: pipeline-shared-data
+    - name: build-image
+      runAfter:
+        - install-dependencies
+      taskRef:
+        kind: Task
+        name: buildah
+      params:
+        - name: IMAGE
+          value: "$(params.image-repo):$(tasks.clone-repository.results.commit)"
+        - name: DOCKERFILE
+          value: ./Dockerfile
+      workspaces:
+        - name: source
+          workspace: pipeline-shared-data
+    - name: kustomize-build
+      runAfter:
+        - build-image
+      taskRef:
+        kind: Task
+        name: kustomize-build-my-app-2
+      params:
+        - name: image-with-tag
+          value: "$(params.image-repo):$(tasks.clone-repository.results.commit)"
+      workspaces:
+        - name: source
+          workspace: pipeline-shared-data
+    - name: gitops
+      runAfter:
+        - kustomize-build
+      taskRef:
+        kind: Task
+        name: gitops
+      params:
+        - name: app-name
+          value: my-app-2
+        - name: sha
+          value: "$(tasks.clone-repository.results.commit)"
+        - name: manifest-dir
+          value: ./k8s
+      workspaces:
+        - name: source
+          workspace: pipeline-shared-data

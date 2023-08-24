@@ -1,0 +1,21 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: my-app-2-pipeline-run-
+spec:
+  serviceAccountName: build-bot
+  pipelineRef:
+    name: my-app-2-pipeline
+  workspaces:
+    - name: pipeline-shared-data
+      persistentVolumeClaim:
+        #claimName: team-aquila-webapp-pvc
+        #claimname: my-app-2-pvc
+				claimname: hibiki-ito-pvc
+  taskRunSpecs:
+    - pipelineTaskName: clone-repository
+      taskPodTemplate:
+        securityContext:
+          runAsUser: 65532
+          runAsGroup: 65532
+          fsGroup: 65532
