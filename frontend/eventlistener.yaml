@@ -1,11 +1,11 @@
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
-  name: my-app-2
+  name: my-app-2-frontend
 spec:
   serviceAccountName: build-bot
   triggers:
-  - name: my-app-2-deploy
+  - name: my-app-2-frontend-deploy
     interceptors:
     - github:
         eventTypes: ["push"]
@@ -14,4 +14,4 @@ spec:
     bindings:
       - ref: my-app-2-tb
     template:
-      ref: my-app-2-tt
+      ref: my-app-2-frontend-tt

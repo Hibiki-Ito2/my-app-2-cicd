@@ -1,14 +1,14 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: kustomize-build-my-app-2
+  name: kustomize-build-frontend
 spec:
   params:
     - name: image-with-tag
       description: define it as image:tag.
     - name: app-name
       description: app name
-      default: my-app-2
+      default: my-app-2-frontend
   workspaces:
     - name: source
       description: contains the cloned git repo

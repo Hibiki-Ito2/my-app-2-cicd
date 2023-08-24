@@ -32,7 +32,7 @@ spec:
         name: npm
       params:
         - name: PATH_CONTEXT
-          value: "../frontend/"
+          value: "frontend"
         - name: ARGS
           value:
             - install
@@ -51,7 +51,9 @@ spec:
         - name: IMAGE
           value: "$(params.image-repo):$(tasks.clone-repository.results.commit)"
         - name: DOCKERFILE
-          value: ./Dockerfile
+          value: ./frontend/Dockerfile
+        - name: CONTEXT
+          value: ./frontend
       workspaces:
         - name: source
           workspace: pipeline-shared-data
@@ -60,7 +62,7 @@ spec:
         - build-image
       taskRef:
         kind: Task
-        name: kustomize-build-my-app-2
+        name: kustomize-build-frontend
       params:
         - name: image-with-tag
           value: "$(params.image-repo):$(tasks.clone-repository.results.commit)"
@@ -75,11 +77,11 @@ spec:
         name: gitops
       params:
         - name: app-name
-          value: my-app-2
+          value: my-app-2-frontend
         - name: sha
           value: "$(tasks.clone-repository.results.commit)"
         - name: manifest-dir
-          value: ./k8s
+          value: frontend/k8s
       workspaces:
         - name: source
           workspace: pipeline-shared-data
