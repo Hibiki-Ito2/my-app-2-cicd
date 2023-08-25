@@ -9,7 +9,8 @@ spec:
   workspaces:
     - name: pipeline-shared-data
       persistentVolumeClaim:
-        claimname: hibiki-ito-pvc
+#        claimname: hibiki-ito-pvc
+        claimname: my-app-2-backend-pvc
   taskRunSpecs:
     - pipelineTaskName: clone-repository
       taskPodTemplate:
@@ -17,3 +18,8 @@ spec:
           runAsUser: 65532
           runAsGroup: 65532
           fsGroup: 65532
+      taskServiceAccountName: github-bot
+    - pipelineTaskName: build-image
+      taskServiceAccountName: build-bot
+    - pipelineTaskName: gitops
+      taskServiceAccountName: github-bot

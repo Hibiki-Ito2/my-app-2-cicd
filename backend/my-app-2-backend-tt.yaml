@@ -22,4 +22,4 @@ spec:
         workspaces:
           - name: pipeline-shared-data
             persistentVolumeClaim:
-              claimName: hibiki-ito-pvc
+              claimName: my-app-2-backend-pvc

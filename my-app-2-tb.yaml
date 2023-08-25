@@ -5,7 +5,7 @@ metadata:
 spec:
   params:
     - name: namespace
-      value: hibiki-ito-pipeline-from-scratch
+      value: hibiki-ito
     - name: gitrepositoryurl
       value: $(body.repository.url)
     - name: gitrepositoryname

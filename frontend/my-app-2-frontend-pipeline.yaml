@@ -3,7 +3,7 @@ kind: Pipeline
 metadata:
   annotations:
     app.openshift.io/runtime: nodejs
-  name: my-app-2-pipeline
+  name: my-app-2-frontend-pipeline
 spec:
   workspaces:
     - name: pipeline-shared-data
@@ -21,7 +21,7 @@ spec:
         name: git-clone
       params:
         - name: url
-          value: https://github.com/Hibiki-Ito2/my-app-2-frontend
+          value: https://github.com/Hibiki-Ito2/my-app-2-frontend.git
       workspaces:
         - name: output
           workspace: pipeline-shared-data
@@ -41,9 +41,23 @@ spec:
       workspaces:
         - name: source
           workspace: pipeline-shared-data
+    - name: run-tests
+      runAfter:
+        - install-dependencies 
+      taskRef:
+        name: npm
+      workspaces:
+        - name: source
+          workspace: pipeline-shared-data
+      params:
+        - name: ARGS
+          value:
+            - test
+        - name: PATH_CONTEXT
+          value: "frontend"
     - name: build-image
       runAfter:
-        - install-dependencies
+        - run-tests
       taskRef:
         kind: Task
         name: buildah
@@ -51,9 +65,9 @@ spec:
         - name: IMAGE
           value: "$(params.image-repo):$(tasks.clone-repository.results.commit)"
         - name: DOCKERFILE
-          value: ./frontend/Dockerfile
+          value: ./Dockerfile
         - name: CONTEXT
-          value: ./frontend
+          value: .
       workspaces:
         - name: source
           workspace: pipeline-shared-data
@@ -81,7 +95,7 @@ spec:
         - name: sha
           value: "$(tasks.clone-repository.results.commit)"
         - name: manifest-dir
-          value: frontend/k8s
+          value: k8s
       workspaces:
         - name: source
           workspace: pipeline-shared-data

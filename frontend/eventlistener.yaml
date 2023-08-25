@@ -10,7 +10,7 @@ spec:
     - github:
         eventTypes: ["push"]
     - cel:
-        filter: "body.repository.name == 'my-app-2-front' && body.ref.split('/')[2] == 'main'"
+        filter: "body.repository.name == 'my-app-2-frontend' && body.ref.split('/')[2] == 'main'"
     bindings:
       - ref: my-app-2-tb
     template:

@@ -21,7 +21,7 @@ spec:
         name: git-clone
       params:
         - name: url
-          value: https://github.com/Hibiki-Ito2/my-app-2-backend
+          value: https://github.com/Hibiki-Ito2/my-app-2-backend.git
       workspaces:
         - name: output
           workspace: pipeline-shared-data
@@ -41,9 +41,23 @@ spec:
       workspaces:
         - name: source
           workspace: pipeline-shared-data
-    - name: build-image
+    - name: run-tests
       runAfter:
         - install-dependencies
+      taskRef:
+        name: npm
+      workspaces:
+        - name: source
+          workspace: pipeline-shared-data
+      params:
+        - name: ARGS
+          value:
+            - test
+        - name: PATH_CONTEXT
+          value: "backend"
+    - name: build-image
+      runAfter:
+        - run-tests
       taskRef:
         kind: Task
         name: buildah
@@ -51,9 +65,9 @@ spec:
         - name: IMAGE
           value: "$(params.image-repo):$(tasks.clone-repository.results.commit)"
         - name: DOCKERFILE
-          value: ./backend/Dockerfile
+          value: ./Dockerfile
         - name: CONTEXT
-          value: ./backend
+          value: .
       workspaces:
         - name: source
           workspace: pipeline-shared-data
@@ -81,8 +95,7 @@ spec:
         - name: sha
           value: "$(tasks.clone-repository.results.commit)"
         - name: manifest-dir
-          value: backend/k8s
+          value: k8s
       workspaces:
         - name: source
-          workspace: pipeline-shared-data
-  
+          workspace: pipeline-shared-data 

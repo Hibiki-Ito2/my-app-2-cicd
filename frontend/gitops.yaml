@@ -115,6 +115,20 @@ spec:
         cd gitops_cd
 
         mkdir -p prod/${NAMESPACE}/${APP_NAME}/
+        ls ../source
+        echo '****'
+        ls ../source/k8s
+        echo '****'
+        echo "APP_NAME: `echo $APP_NAME`"
+        echo "MANIFEST_DIR: `echo $MANIFEST_DIR`"
+        echo "SHA: `echo $SHA`"
+        echo "BRANCH_CMD: `echo $BRANCH_CMD`"
+        echo "PROTOCOL: `echo $PROTOCOL`"
+        echo "GIT_AUTH_USER: `echo $GIT_AUTH_USER`"
+        echo "GIT_AUTH_PWD: `echo $GIT_AUTH_PWD`"
+        echo "GIT_URL: `echo $GIT_URL`"
+        echo "NAMESPACE: `echo $NAMESPACE`"
+        echo '****'
         cp ../source/${MANIFEST_DIR}/manifests.yaml prod/${NAMESPACE}/${APP_NAME}/
 
         if [[ $(git status -s | wc -l) -eq 0 ]]; then
